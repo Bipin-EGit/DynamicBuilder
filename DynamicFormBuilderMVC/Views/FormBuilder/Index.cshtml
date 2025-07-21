@@ -1,0 +1,199 @@
+@model DynamicFormBuilderMVC.Models.ViewModels.FormBuilderViewModel
+@{
+    ViewData["Title"] = "Form Builder";
+}
+
+<div class="form-builder-container">
+    <!-- Header -->
+    <div class="builder-header card mb-3">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="form-title-section">
+                        <input type="text" id="formTitle" class="form-title-input form-control form-control-lg" 
+                               value="@Model.Form.Title" placeholder="Enter form title...">
+                        <input type="hidden" id="formId" value="@Model.Form.Id">
+                    </div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="header-actions">
+                        <button id="clearForm" class="btn btn-outline-warning me-2">
+                            <i class="fas fa-trash"></i> Clear Form
+                        </button>
+                        <a asp-action="Preview" asp-route-id="@Model.Form.Id" class="btn btn-success me-2">
+                            <i class="fas fa-eye"></i> Preview & Generate
+                        </a>
+                        <a asp-action="EmailScheduler" asp-route-id="@Model.Form.Id" class="btn btn-info">
+                            <i class="fas fa-envelope"></i> Email Scheduler
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Builder Content -->
+    <div class="row">
+        <!-- Component Palette -->
+        <div class="col-lg-3">
+            <div class="component-palette card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-puzzle-piece"></i> Components</h5>
+                </div>
+                <div class="card-body">
+                    <div class="palette-items">
+                        <div class="palette-item" data-component-type="1" draggable="true">
+                            <i class="fas fa-font"></i>
+                            <span>Text Input</span>
+                        </div>
+                        <div class="palette-item" data-component-type="2" draggable="true">
+                            <i class="fas fa-align-left"></i>
+                            <span>Textarea</span>
+                        </div>
+                        <div class="palette-item" data-component-type="3" draggable="true">
+                            <i class="fas fa-calendar"></i>
+                            <span>Date Input</span>
+                        </div>
+                        <div class="palette-item" data-component-type="4" draggable="true">
+                            <i class="fas fa-chevron-down"></i>
+                            <span>Select</span>
+                        </div>
+                        <div class="palette-item" data-component-type="5" draggable="true">
+                            <i class="fas fa-check-square"></i>
+                            <span>Checkbox</span>
+                        </div>
+                        <div class="palette-item" data-component-type="6" draggable="true">
+                            <i class="fas fa-dot-circle"></i>
+                            <span>Radio</span>
+                        </div>
+                        <div class="palette-item" data-component-type="7" draggable="true">
+                            <i class="fas fa-table"></i>
+                            <span>Table</span>
+                        </div>
+                        <div class="palette-item" data-component-type="8" draggable="true">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Chart</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Canvas -->
+        <div class="col-lg-6">
+            <div class="canvas-container card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-desktop"></i> Form Canvas</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div id="formCanvas" class="canvas">
+                        <div id="canvasPlaceholder" class="canvas-placeholder" style="@(Model.Components.Any() ? "display: none;" : "")">
+                            <i class="fas fa-mouse-pointer fa-3x mb-3"></i>
+                            <h4>Drag components here to build your form</h4>
+                            <p>Start by dragging components from the palette on the left</p>
+                        </div>
+                        
+                        @foreach (var component in Model.Components)
+                        {
+                            <div class="canvas-component" data-component-id="@component.Id" data-component-type="@((int)component.Type)">
+                                @await Html.PartialAsync("_ComponentRenderer", component)
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Properties Panel -->
+        <div class="col-lg-3">
+            <div class="properties-panel card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-cog"></i> Properties</h5>
+                </div>
+                <div class="card-body">
+                    <div id="propertiesContent">
+                        <div id="noSelectionMessage" class="text-center text-muted">
+                            <i class="fas fa-hand-pointer fa-3x mb-3"></i>
+                            <p>Select a component to edit its properties</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Component Property Templates -->
+<div id="propertyTemplates" style="display: none;">
+    <!-- Text/Textarea Properties -->
+    <div id="textPropertiesTemplate">
+        <div class="property-group mb-3">
+            <label class="form-label">Label:</label>
+            <input type="text" class="form-control property-label" placeholder="Component label">
+        </div>
+        <div class="property-group mb-3">
+            <label class="form-label">Placeholder:</label>
+            <input type="text" class="form-control property-placeholder" placeholder="Enter placeholder text">
+        </div>
+        <div class="property-group mb-3 textarea-only" style="display: none;">
+            <label class="form-label">Rows:</label>
+            <input type="number" class="form-control property-rows" min="2" max="10" value="4">
+        </div>
+        <button class="btn btn-danger btn-sm" onclick="removeSelectedComponent()">
+            <i class="fas fa-trash"></i> Remove Component
+        </button>
+    </div>
+
+    <!-- Select/Radio Properties -->
+    <div id="selectPropertiesTemplate">
+        <div class="property-group mb-3">
+            <label class="form-label">Label:</label>
+            <input type="text" class="form-control property-label" placeholder="Component label">
+        </div>
+        <div class="property-group mb-3">
+            <label class="form-label">Options (one per line):</label>
+            <textarea class="form-control property-options" rows="4" placeholder="Option 1&#10;Option 2&#10;Option 3"></textarea>
+        </div>
+        <button class="btn btn-danger btn-sm" onclick="removeSelectedComponent()">
+            <i class="fas fa-trash"></i> Remove Component
+        </button>
+    </div>
+
+    <!-- Chart Properties -->
+    <div id="chartPropertiesTemplate">
+        <div class="property-group mb-3">
+            <label class="form-label">Label:</label>
+            <input type="text" class="form-control property-label" placeholder="Component label">
+        </div>
+        <div class="property-group mb-3">
+            <label class="form-label">Chart Type:</label>
+            <select class="form-control property-charttype">
+                <option value="bar">Bar Chart</option>
+                <option value="line">Line Chart</option>
+                <option value="pie">Pie Chart</option>
+                <option value="doughnut">Doughnut Chart</option>
+            </select>
+        </div>
+        <button class="btn btn-danger btn-sm" onclick="removeSelectedComponent()">
+            <i class="fas fa-trash"></i> Remove Component
+        </button>
+    </div>
+
+    <!-- Default Properties -->
+    <div id="defaultPropertiesTemplate">
+        <div class="property-group mb-3">
+            <label class="form-label">Label:</label>
+            <input type="text" class="form-control property-label" placeholder="Component label">
+        </div>
+        <button class="btn btn-danger btn-sm" onclick="removeSelectedComponent()">
+            <i class="fas fa-trash"></i> Remove Component
+        </button>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const formId = @Model.Form.Id;
+        const currentComponents = @Html.Raw(Json.Serialize(Model.Components));
+    </script>
+}

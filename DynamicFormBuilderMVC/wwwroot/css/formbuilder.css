@@ -1,0 +1,360 @@
+/* Form Builder Styles */
+.form-builder-container {
+    min-height: calc(100vh - 200px);
+}
+
+.builder-header {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.form-title-input {
+    border: none;
+    font-weight: 600;
+    font-size: 1.5rem;
+    background: transparent;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.3s;
+}
+
+.form-title-input:focus {
+    background: white;
+    border-bottom-color: #007bff;
+    box-shadow: none;
+}
+
+.header-actions .btn {
+    margin-left: 0.5rem;
+}
+
+/* Component Palette */
+.component-palette {
+    height: 600px;
+    overflow-y: auto;
+}
+
+.palette-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.palette-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border: 2px solid #e9ecef;
+    border-radius: 6px;
+    cursor: grab;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+    user-select: none;
+}
+
+.palette-item:hover {
+    background: #e9ecef;
+    border-color: #007bff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,123,255,0.15);
+}
+
+.palette-item:active {
+    cursor: grabbing;
+    transform: translateY(0);
+}
+
+.palette-item i {
+    font-size: 1.2rem;
+    color: #007bff;
+    width: 20px;
+    text-align: center;
+}
+
+.palette-item span {
+    font-weight: 500;
+    color: #495057;
+}
+
+/* Canvas */
+.canvas-container {
+    height: 600px;
+}
+
+.canvas {
+    height: 100%;
+    position: relative;
+    background: 
+        linear-gradient(45deg, #f8f9fa 25%, transparent 25%),
+        linear-gradient(-45deg, #f8f9fa 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #f8f9fa 75%),
+        linear-gradient(-45deg, transparent 75%, #f8f9fa 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    overflow: auto;
+    border-radius: 0 0 6px 6px;
+}
+
+.canvas-placeholder {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #6c757d;
+    pointer-events: none;
+}
+
+.canvas-placeholder i {
+    color: #dee2e6;
+}
+
+.canvas-component {
+    margin: 1rem;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+    border-radius: 6px;
+}
+
+.canvas-component:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.canvas-component.selected {
+    outline: 3px solid #007bff;
+    outline-offset: 2px;
+    transform: scale(1.02);
+}
+
+.canvas-component.drag-over {
+    background: rgba(0,123,255,0.1);
+    border: 2px dashed #007bff;
+}
+
+/* Component Styles */
+.component-wrapper {
+    padding: 1rem;
+    border: 2px solid #e9ecef;
+    border-radius: 6px;
+    background: white;
+    min-height: 60px;
+    position: relative;
+}
+
+.component-wrapper .component-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #495057;
+}
+
+.component-wrapper input,
+.component-wrapper textarea,
+.component-wrapper select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    pointer-events: none;
+}
+
+.component-wrapper .chart-placeholder {
+    width: 100%;
+    height: 200px;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.component-wrapper .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #dee2e6;
+}
+
+.component-wrapper .data-table th,
+.component-wrapper .data-table td {
+    padding: 0.5rem;
+    text-align: left;
+    border: 1px solid #dee2e6;
+    font-size: 0.85rem;
+}
+
+.component-wrapper .data-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.component-wrapper .checkbox-label,
+.component-wrapper .radio-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.component-wrapper .radio-group {
+    margin-left: 1rem;
+}
+
+/* Properties Panel */
+.properties-panel {
+    height: 600px;
+    overflow-y: auto;
+}
+
+.property-group label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.property-group input,
+.property-group textarea,
+.property-group select {
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.property-group input:focus,
+.property-group textarea:focus,
+.property-group select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+}
+
+/* Drag and Drop States */
+.drag-source {
+    opacity: 0.5;
+}
+
+.drop-zone {
+    min-height: 100px;
+    border: 2px dashed #007bff;
+    background: rgba(0,123,255,0.05);
+    border-radius: 6px;
+    position: relative;
+}
+
+.drop-zone::before {
+    content: "Drop component here";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #007bff;
+    font-weight: 500;
+    pointer-events: none;
+}
+
+/* Loading States */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .form-builder-container .row {
+        flex-direction: column;
+    }
+    
+    .component-palette,
+    .canvas-container,
+    .properties-panel {
+        height: auto;
+        min-height: 400px;
+        margin-bottom: 1rem;
+    }
+    
+    .header-actions {
+        margin-top: 1rem;
+    }
+    
+    .header-actions .btn {
+        margin: 0.25rem;
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .form-title-input {
+        font-size: 1.2rem;
+    }
+    
+    .canvas-component {
+        margin: 0.5rem;
+    }
+    
+    .palette-item {
+        padding: 0.5rem;
+    }
+    
+    .component-wrapper {
+        padding: 0.75rem;
+    }
+}
+
+/* Animation Classes */
+.fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+.slide-in {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Success/Error States */
+.success-state {
+    border-color: #28a745 !important;
+    box-shadow: 0 0 0 0.2rem rgba(40,167,69,0.25) !important;
+}
+
+.error-state {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 0.2rem rgba(220,53,69,0.25) !important;
+}

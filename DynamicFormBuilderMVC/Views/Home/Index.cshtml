@@ -1,0 +1,175 @@
+@model List<DynamicFormBuilderMVC.Models.DynamicForm>
+@{
+    ViewData["Title"] = "Dynamic Form Builder";
+}
+
+<div class="hero-section bg-primary text-white py-5 rounded mb-4">
+    <div class="container text-center">
+        <h1 class="display-4 mb-3">
+            <i class="fas fa-magic"></i> Dynamic Form Builder
+        </h1>
+        <p class="lead mb-4">Create powerful, interactive forms with drag-and-drop simplicity</p>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <i class="fas fa-mouse-pointer fa-3x mb-2"></i>
+                        <h5>Drag & Drop</h5>
+                        <p>Intuitive form building</p>
+                    </div>
+                    <div class="col-md-4">
+                        <i class="fas fa-code fa-3x mb-2"></i>
+                        <h5>HTML Generation</h5>
+                        <p>Export clean code</p>
+                    </div>
+                    <div class="col-md-4">
+                        <i class="fas fa-envelope fa-3x mb-2"></i>
+                        <h5>Email Automation</h5>
+                        <p>Schedule & send forms</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-4">
+            <a asp-controller="FormBuilder" asp-action="Create" class="btn btn-light btn-lg me-3">
+                <i class="fas fa-plus"></i> Create New Form
+            </a>
+            <a asp-controller="FormBuilder" asp-action="Index" class="btn btn-outline-light btn-lg">
+                <i class="fas fa-tools"></i> Open Form Builder
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="mb-0"><i class="fas fa-list"></i> Your Forms</h3>
+                <a asp-controller="FormBuilder" asp-action="Create" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> New Form
+                </a>
+            </div>
+            <div class="card-body">
+                @if (Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th><i class="fas fa-file-alt"></i> Form Name</th>
+                                    <th><i class="fas fa-puzzle-piece"></i> Components</th>
+                                    <th><i class="fas fa-calendar"></i> Created</th>
+                                    <th><i class="fas fa-cogs"></i> Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var form in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>@form.Title</strong>
+                                            @if (!string.IsNullOrEmpty(form.Description))
+                                            {
+                                                <br><small class="text-muted">@form.Description</small>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">@form.Components.Count components</span>
+                                        </td>
+                                        <td>
+                                            <small>@form.CreatedAt.ToString("MMM dd, yyyy")</small>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a asp-controller="FormBuilder" asp-action="Index" asp-route-id="@form.Id" 
+                                                   class="btn btn-sm btn-outline-primary" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a asp-controller="FormBuilder" asp-action="Preview" asp-route-id="@form.Id" 
+                                                   class="btn btn-sm btn-outline-success" title="Preview">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a asp-controller="FormBuilder" asp-action="EmailScheduler" asp-route-id="@form.Id" 
+                                                   class="btn btn-sm btn-outline-info" title="Email Scheduler">
+                                                    <i class="fas fa-envelope"></i>
+                                                </a>
+                                                <a asp-controller="FormBuilder" asp-action="DownloadHtml" asp-route-id="@form.Id" 
+                                                   class="btn btn-sm btn-outline-secondary" title="Download HTML">
+                                                    <i class="fas fa-download"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="fas fa-plus-circle fa-4x text-muted mb-3"></i>
+                        <h4 class="text-muted">No forms created yet</h4>
+                        <p class="text-muted">Get started by creating your first dynamic form</p>
+                        <a asp-controller="FormBuilder" asp-action="Create" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Create Your First Form
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-info-circle"></i> Features</h5>
+            </div>
+            <div class="card-body">
+                <div class="feature-list">
+                    <div class="feature-item mb-3">
+                        <i class="fas fa-mouse-pointer text-primary me-2"></i>
+                        <strong>Drag & Drop Components</strong>
+                        <p class="mb-0 small text-muted">Text inputs, dropdowns, charts, tables, and more</p>
+                    </div>
+                    <div class="feature-item mb-3">
+                        <i class="fas fa-chart-bar text-success me-2"></i>
+                        <strong>Interactive Charts</strong>
+                        <p class="mb-0 small text-muted">Bar, line, pie, and doughnut charts with Chart.js</p>
+                    </div>
+                    <div class="feature-item mb-3">
+                        <i class="fas fa-code text-warning me-2"></i>
+                        <strong>HTML Generation</strong>
+                        <p class="mb-0 small text-muted">Export clean, styled HTML with embedded CSS</p>
+                    </div>
+                    <div class="feature-item mb-3">
+                        <i class="fas fa-envelope text-info me-2"></i>
+                        <strong>Email Scheduling</strong>
+                        <p class="mb-0 small text-muted">Automate form delivery with cron jobs</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-mobile-alt text-danger me-2"></i>
+                        <strong>Responsive Design</strong>
+                        <p class="mb-0 small text-muted">Forms work perfectly on all devices</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-question-circle"></i> Quick Start</h5>
+            </div>
+            <div class="card-body">
+                <ol class="mb-0">
+                    <li>Click "Create New Form" to start</li>
+                    <li>Drag components from the palette</li>
+                    <li>Customize component properties</li>
+                    <li>Generate and preview HTML</li>
+                    <li>Set up email schedules</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>

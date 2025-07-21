@@ -1,0 +1,121 @@
+@model DynamicFormBuilderMVC.Models.FormComponent
+@{
+    var properties = string.IsNullOrEmpty(Model.Properties) ? 
+        new Dictionary<string, object>() : 
+        Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(Model.Properties) ?? new Dictionary<string, object>();
+}
+
+<div class="component-wrapper">
+    @switch (Model.Type)
+    {
+        case DynamicFormBuilderMVC.Models.ComponentType.Text:
+            <label class="component-label">@Model.Label</label>
+            <input type="text" 
+                   placeholder="@(properties.GetValueOrDefault("placeholder", "").ToString())" 
+                   class="form-control" readonly />
+            break;
+
+        case DynamicFormBuilderMVC.Models.ComponentType.Textarea:
+            <label class="component-label">@Model.Label</label>
+            <textarea placeholder="@(properties.GetValueOrDefault("placeholder", "").ToString())" 
+                      rows="@(properties.GetValueOrDefault("rows", 4).ToString())" 
+                      class="form-control" readonly></textarea>
+            break;
+
+        case DynamicFormBuilderMVC.Models.ComponentType.Date:
+            <label class="component-label">@Model.Label</label>
+            <input type="date" class="form-control" readonly />
+            break;
+
+        case DynamicFormBuilderMVC.Models.ComponentType.Select:
+            <label class="component-label">@Model.Label</label>
+            <select class="form-control" disabled>
+                @if (properties.ContainsKey("options") && properties["options"] is Newtonsoft.Json.Linq.JArray options)
+                {
+                    @foreach (var option in options)
+                    {
+                        <option value="@option">@option</option>
+                    }
+                }
+                else
+                {
+                    <option>Option 1</option>
+                    <option>Option 2</option>
+                    <option>Option 3</option>
+                }
+            </select>
+            break;
+
+        case DynamicFormBuilderMVC.Models.ComponentType.Checkbox:
+            <label class="checkbox-label">
+                <input type="checkbox" disabled />
+                @Model.Label
+            </label>
+            break;
+
+        case DynamicFormBuilderMVC.Models.ComponentType.Radio:
+            <label class="component-label">@Model.Label</label>
+            <div class="radio-group">
+                @if (properties.ContainsKey("options") && properties["options"] is Newtonsoft.Json.Linq.JArray radioOptions)
+                {
+                    @foreach (var option in radioOptions)
+                    {
+                        <label class="radio-label">
+                            <input type="radio" name="@Model.ComponentId" value="@option" disabled />
+                            @option
+                        </label>
+                    }
+                }
+                else
+                {
+                    <label class="radio-label">
+                        <input type="radio" name="@Model.ComponentId" value="Option 1" disabled />
+                        Option 1
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="@Model.ComponentId" value="Option 2" disabled />
+                        Option 2
+                    </label>
+                }
+            </div>
+            break;
+
+        case DynamicFormBuilderMVC.Models.ComponentType.Table:
+            <h5 class="component-label">@Model.Label</h5>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Column 1</th>
+                        <th>Column 2</th>
+                        <th>Column 3</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Sample Data 1</td>
+                        <td>Sample Data 2</td>
+                        <td>Sample Data 3</td>
+                    </tr>
+                    <tr>
+                        <td>Sample Data 4</td>
+                        <td>Sample Data 5</td>
+                        <td>Sample Data 6</td>
+                    </tr>
+                </tbody>
+            </table>
+            break;
+
+        case DynamicFormBuilderMVC.Models.ComponentType.Chart:
+            <h5 class="component-label">@Model.Label</h5>
+            <div class="chart-placeholder">
+                <i class="fas fa-chart-@(properties.GetValueOrDefault("chartType", "bar"))"></i>
+                @(properties.GetValueOrDefault("chartType", "bar").ToString().ToUpper()) Chart
+            </div>
+            break;
+
+        default:
+            <label class="component-label">@Model.Label</label>
+            <div class="alert alert-secondary">Unknown Component Type</div>
+            break;
+    }
+</div>

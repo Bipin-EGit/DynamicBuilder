@@ -1,0 +1,288 @@
+@model DynamicFormBuilderMVC.Models.ViewModels.FormPreviewViewModel
+@{
+    ViewData["Title"] = "Form Preview & HTML Generation";
+}
+
+<div class="preview-container">
+    <div class="preview-header card mb-3">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2 class="mb-0">
+                        <i class="fas fa-eye text-primary"></i> 
+                        Form Preview & HTML Generation
+                    </h2>
+                    <p class="text-muted mb-0">Preview your form and generate clean HTML code</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-primary active" data-tab="preview">
+                            <i class="fas fa-eye"></i> Live Preview
+                        </button>
+                        <button type="button" class="btn btn-outline-primary" data-tab="html">
+                            <i class="fas fa-code"></i> HTML Code
+                        </button>
+                    </div>
+                    <div class="mt-2">
+                        <a asp-action="DownloadHtml" asp-route-id="@Model.Form.Id" class="btn btn-success me-2">
+                            <i class="fas fa-download"></i> Download HTML
+                        </a>
+                        <a asp-action="Index" asp-route-id="@Model.Form.Id" class="btn btn-secondary">
+                            <i class="fas fa-edit"></i> Back to Editor
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Preview Tab -->
+    <div id="previewTab" class="tab-content active">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-desktop"></i> Live Preview</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.Form.Components.Any())
+                {
+                    <div class="form-preview-container">
+                        <div class="form-preview">
+                            <h1 class="form-title text-center mb-4">@Model.Form.Title</h1>
+                            
+                            @if (!string.IsNullOrEmpty(Model.Form.Description))
+                            {
+                                <p class="form-description text-center text-muted mb-4">@Model.Form.Description</p>
+                            }
+
+                            <form>
+                                @foreach (var component in Model.Form.Components.OrderBy(c => c.Order))
+                                {
+                                    <div class="preview-component mb-3">
+                                        @await Html.PartialAsync("_PreviewComponent", component)
+                                    </div>
+                                }
+                                
+                                <div class="form-actions text-center mt-4 pt-3 border-top">
+                                    <button type="submit" class="btn btn-primary btn-lg me-3">
+                                        <i class="fas fa-paper-plane"></i> Submit Form
+                                    </button>
+                                    <button type="reset" class="btn btn-outline-secondary btn-lg">
+                                        <i class="fas fa-undo"></i> Reset
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="fas fa-exclamation-triangle fa-4x text-muted mb-3"></i>
+                        <h4 class="text-muted">No components to preview</h4>
+                        <p class="text-muted">Add some components to your form to see the preview</p>
+                        <a asp-action="Index" asp-route-id="@Model.Form.Id" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Components
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- HTML Code Tab -->
+    <div id="htmlTab" class="tab-content" style="display: none;">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-code"></i> Generated HTML Code</h5>
+                <button id="copyHtmlBtn" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-copy"></i> Copy to Clipboard
+                </button>
+            </div>
+            <div class="card-body p-0">
+                <div class="code-container">
+                    <pre class="html-code"><code id="htmlContent">@Html.Raw(Html.Encode(Model.GeneratedHtml))</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Schedules Info -->
+    @if (Model.EmailSchedules.Any())
+    {
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-envelope"></i> Active Email Schedules</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    @foreach (var schedule in Model.EmailSchedules.Where(s => s.IsEnabled))
+                    {
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="schedule-card">
+                                <div class="schedule-email">
+                                    <strong>@schedule.Email</strong>
+                                </div>
+                                <div class="schedule-details">
+                                    <small class="text-muted">
+                                        @schedule.Frequency.ToString() at @schedule.Time.ToString(@"hh\:mm")
+                                    </small>
+                                </div>
+                                <div class="schedule-status">
+                                    <span class="badge bg-success">Active</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="text-center mt-3">
+                    <a asp-action="EmailScheduler" asp-route-id="@Model.Form.Id" class="btn btn-info">
+                        <i class="fas fa-cog"></i> Manage Email Schedules
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Tab switching functionality
+        document.querySelectorAll('[data-tab]').forEach(button => {
+            button.addEventListener('click', function() {
+                const targetTab = this.getAttribute('data-tab');
+                
+                // Update button states
+                document.querySelectorAll('[data-tab]').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show/hide content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.style.display = 'none';
+                });
+                document.getElementById(targetTab + 'Tab').style.display = 'block';
+            });
+        });
+
+        // Copy to clipboard functionality
+        document.getElementById('copyHtmlBtn').addEventListener('click', async function() {
+            const htmlContent = document.getElementById('htmlContent').textContent;
+            
+            try {
+                await navigator.clipboard.writeText(htmlContent);
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                this.classList.remove('btn-outline-secondary');
+                this.classList.add('btn-success');
+                
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.classList.remove('btn-success');
+                    this.classList.add('btn-outline-secondary');
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy HTML:', err);
+                alert('Failed to copy HTML to clipboard');
+            }
+        });
+
+        // Initialize charts if any
+        document.addEventListener('DOMContentLoaded', function() {
+            const chartElements = document.querySelectorAll('.preview-chart');
+            chartElements.forEach(element => {
+                const chartType = element.getAttribute('data-chart-type') || 'bar';
+                const ctx = element.getContext('2d');
+                
+                new Chart(ctx, {
+                    type: chartType,
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                        datasets: [{
+                            label: 'Sample Data',
+                            data: [12, 19, 3, 5, 2],
+                            backgroundColor: chartType === 'pie' || chartType === 'doughnut' ? [
+                                'rgba(231, 76, 60, 0.8)',
+                                'rgba(52, 152, 219, 0.8)',
+                                'rgba(241, 196, 15, 0.8)',
+                                'rgba(46, 204, 113, 0.8)',
+                                'rgba(155, 89, 182, 0.8)'
+                            ] : 'rgba(52, 152, 219, 0.6)',
+                            borderColor: 'rgba(52, 152, 219, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            });
+        });
+    </script>
+}
+
+<style>
+    .preview-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .form-preview-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .form-preview {
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .preview-component {
+        margin-bottom: 1.5rem;
+    }
+
+    .code-container {
+        max-height: 600px;
+        overflow-y: auto;
+    }
+
+    .html-code {
+        background: #f8f9fa;
+        border: none;
+        padding: 1.5rem;
+        margin: 0;
+        font-family: 'Courier New', monospace;
+        font-size: 0.85rem;
+        line-height: 1.4;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+
+    .schedule-card {
+        padding: 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        background: #f8f9fa;
+    }
+
+    .schedule-email {
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .schedule-details {
+        margin-bottom: 0.5rem;
+    }
+
+    .tab-content.active {
+        display: block !important;
+    }
+
+    .btn-group .btn {
+        min-width: 120px;
+    }
+</style>
