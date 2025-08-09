@@ -1,0 +1,132 @@
+:root {
+  --brand-hue: 210;
+  --brand-sat: 100%;
+  --brand-light: 50%;
+
+  --color-primary: hsl(var(--brand-hue), var(--brand-sat), var(--brand-light));
+  --color-primary-600: hsl(var(--brand-hue), 90%, 45%);
+  --color-danger: hsl(8, 80%, 56%);
+
+  --color-bg: hsl(0, 0%, 99%);
+  --color-surface: #ffffff;
+  --color-border: hsl(210, 18%, 90%);
+  --color-text: hsl(222, 22%, 12%);
+  --color-text-muted: hsl(222, 12%, 42%);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.06);
+  --shadow-md: 0 6px 16px rgba(0,0,0,.08);
+
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+}
+
+/* Dark theme */
+:root[data-theme="dark"] {
+  --color-bg: hsl(222, 15%, 10%);
+  --color-surface: hsl(222, 16%, 12%);
+  --color-border: hsl(222, 14%, 18%);
+  --color-text: hsl(220, 14%, 96%);
+  --color-text-muted: hsl(220, 10%, 70%);
+  --shadow-md: 0 10px 24px rgba(0,0,0,.45);
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  color: var(--color-text);
+  background: radial-gradient(1200px 600px at 80% -20%, rgba(0,0,0,.04), transparent 60%), var(--color-bg);
+  line-height: 1.5;
+}
+
+.container { max-width: 1200px; margin: 0 auto; padding: 0 var(--space-lg); }
+
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--space-lg) 0;
+}
+.brand { display: inline-flex; align-items: center; gap: var(--space-sm); font-weight: 700; }
+.brand-mark { width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, var(--color-primary), var(--color-primary-600)); box-shadow: var(--shadow-sm); }
+.brand-name { letter-spacing: 0.2px; }
+
+.actions { display: inline-flex; gap: var(--space-sm); align-items: center; }
+
+.card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-lg); box-shadow: var(--shadow-sm); }
+.card + .card { margin-top: var(--space-lg); }
+
+.grid { display: grid; }
+.grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.gap-lg { gap: var(--space-lg); }
+
+@media (max-width: 860px) {
+  .grid-2 { grid-template-columns: 1fr; }
+}
+
+.form-field { display: grid; gap: var(--space-xs); }
+label { font-weight: 600; color: var(--color-text-muted); }
+
+/* Custom select */
+.select { position: relative; }
+.select::after {
+  content: "";
+  pointer-events: none;
+  position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+  width: 10px; height: 10px;
+  background: conic-gradient(from 45deg, transparent 0 25%, currentColor 0 75%, transparent 75%);
+  color: var(--color-text-muted);
+  mask: radial-gradient(circle at 0 50%, transparent 8px, #000 8px);
+}
+select, input, button {
+  font: inherit;
+}
+select, input[type="text"], input[type="search"] {
+  width: 100%;
+  padding: 14px 44px 14px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease;
+  appearance: none;
+}
+select:focus, input[type="text"]:focus, input[type="search"]:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-primary) 20%, transparent);
+}
+
+/* Buttons */
+.btn {
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .04s ease, box-shadow .15s ease, background .15s ease;
+  box-shadow: var(--shadow-sm);
+}
+.btn:active { transform: translateY(1px); }
+.btn:hover { box-shadow: var(--shadow-md); }
+
+.btn-danger { background: var(--color-danger); }
+.btn-ghost { background: transparent; color: var(--color-text); border-color: var(--color-border); }
+.btn-ghost:hover { background: color-mix(in oklab, var(--color-text) 6%, transparent); }
+.btn-icon { margin-right: 8px; }
+
+/* Map */
+.map { width: 100%; height: min(52vh, 640px); min-height: 360px; border-radius: var(--radius-lg); overflow: hidden; }
+
+.footer { color: var(--color-text-muted); padding: var(--space-2xl) 0; text-align: center; }
